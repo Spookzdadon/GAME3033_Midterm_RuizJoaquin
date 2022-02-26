@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     private float x;
     private float y;
     private Transform cameraOriginPos;
+    public bool isAlive = true;
 
     void Start()
     {
@@ -47,46 +48,48 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Vector3 mousePos = Input.mousePosition;
-        //mousePos += transform.forward * 100f;
-        //var aim = mainCamera.ScreenToWorldPoint(mousePos);
-        //muzzleLocation.transform.LookAt(aim);
-        x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
-        y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
+        if (isAlive)
+        {
+            x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
+            y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
 
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            Boost();
-        }
-        else if (Input.GetKey(KeyCode.Space))
-        {
-            Brake();
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                Boost();
+            }
+            else if (Input.GetKey(KeyCode.Space))
+            {
+                Brake();
+            }
+            else
+            {
+                dollyCart.m_Speed = 60f;
+                mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -40f), 0.3f);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                {
+                    muzzleLocation.transform.LookAt(hit.point);
+                    Instantiate<GameObject>(bulletPrefab, muzzleLocation.transform.position, muzzleLocation.transform.rotation);
+                }
+            }
+
+            RotateShipX();
+            ClampPosition();
+
+            crosshair.transform.position = Input.mousePosition;
+
+            playerShip.transform.LookAt(lookAt.transform.position);
+            playerShip.transform.Translate(new Vector3(x, y, 0), Space.Self);
         }
         else
         {
-            dollyCart.m_Speed = 60f;
-            mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -40f), 0.3f);
+            dollyCart.m_Speed = 0f;
         }
-        
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if(Physics.Raycast(ray, out hit))
-            {
-                muzzleLocation.transform.LookAt(hit.point);
-                Instantiate<GameObject>(bulletPrefab, muzzleLocation.transform.position, muzzleLocation.transform.rotation);
-            }
-        }
-
-        RotateShipX();
-        ClampPosition();
-
-        crosshair.transform.position = Input.mousePosition;
-
-        playerShip.transform.LookAt(lookAt.transform.position);
-        playerShip.transform.Translate(new Vector3(x, y, 0), Space.Self);
-        //transform.Translate(new Vector3(0f, 0f, dollyCart.m_Speed), Space.World);
     }
 
     private void RotateShipX()
@@ -149,5 +152,10 @@ public class PlayerController : MonoBehaviour
         pos.x = Mathf.Clamp01(pos.x);
         pos.y = Mathf.Clamp01(pos.y);
         playerShip.transform.position = Camera.main.ViewportToWorldPoint(pos);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        
     }
 }

@@ -46,7 +46,6 @@ public class BulletScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        print("Collision!");
         StopAllCoroutines();
         StartCoroutine(Explode());
     }
