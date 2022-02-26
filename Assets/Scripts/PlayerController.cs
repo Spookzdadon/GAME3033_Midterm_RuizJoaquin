@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Cinemachine;
+using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
@@ -21,6 +22,8 @@ public class PlayerController : MonoBehaviour
     public GameObject muzzleLocation;
     [SerializeField]
     public GameObject bulletPrefab;
+    [SerializeField]
+    RawImage crosshair;
 
     private float shipRotationX = 0f;
     private float rotationSpeed = 60f;
@@ -31,6 +34,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = false;
         cameraOriginPos = mainCamera.transform;
         dollyCart = GetComponent<CinemachineDollyCart>();
         playerShip = GameObject.FindGameObjectWithTag("PlayerShipParent");
@@ -42,6 +47,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Vector3 mousePos = Input.mousePosition;
+        mousePos += Camera.main.transform.forward * 100f;
+        var aim = mainCamera.ScreenToWorldPoint(mousePos);
+        muzzleLocation.transform.LookAt(aim);
         x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
         y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
 
@@ -67,6 +76,7 @@ public class PlayerController : MonoBehaviour
         RotateShipX();
         ClampPosition();
 
+        crosshair.transform.position = Input.mousePosition;
 
         playerShip.transform.LookAt(lookAt.transform.position);
         playerShip.transform.Translate(new Vector3(x, y, 0), Space.Self);
