@@ -13,8 +13,10 @@ public class PlayerScript : MonoBehaviour
     [SerializeField]
     private Animator animator;
 
-    private float shipRotation = 0f;
+    private float shipRotationX = 0f;
     private float rotationSpeed = 60f;
+    private float x;
+    private float y;
     void Start()
     {
         playerShip = GameObject.FindGameObjectWithTag("PlayerShipParent");
@@ -24,48 +26,65 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
-        float y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
+        x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
+        y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
 
         playerShip.transform.Translate(new Vector3(x, y, 0), Space.World);
+
+        RotateShipX();
+        
+
+        playerShip.transform.LookAt(lookAt.transform.position);
+        ClampPosition();
+        transform.Translate(new Vector3(0f, 0f, 20f * Time.deltaTime), Space.World);
+    }
+
+    private void RotateShipX()
+    {
         if (x < 0)
         {
-            if (shipRotation >= -1f)
+            if (shipRotationX >= -1f)
             {
-                shipRotation -= 0.1f * Time.deltaTime * rotationSpeed;
+                shipRotationX -= 0.1f * Time.deltaTime * rotationSpeed;
             }
             else
             {
-                shipRotation = -1f;
+                shipRotationX = -1f;
             }
         }
         else if (x > 0)
         {
-            if (shipRotation <= 1f)
+            if (shipRotationX <= 1f)
             {
-                shipRotation += 0.1f * Time.deltaTime * rotationSpeed;
+                shipRotationX += 0.1f * Time.deltaTime * rotationSpeed;
             }
             else
             {
-                shipRotation = 1f;
+                shipRotationX = 1f;
             }
         }
         else
         {
-            if (shipRotation < 0f)
+            if (shipRotationX < 0f)
             {
-                shipRotation += 0.1f * Time.deltaTime * rotationSpeed;
+                shipRotationX += 0.1f * Time.deltaTime * rotationSpeed;
             }
-            else if (shipRotation > 0f)
+            else if (shipRotationX > 0f)
             {
-                shipRotation -= 0.1f * Time.deltaTime * rotationSpeed;
+                shipRotationX -= 0.1f * Time.deltaTime * rotationSpeed;
             }
             else
             {
-                shipRotation = 0f;
+                shipRotationX = 0f;
             }
         }
-        animator.SetFloat("ShipRot", shipRotation);
-        playerShip.transform.LookAt(lookAt.transform.position);
+        animator.SetFloat("ShipRotX", shipRotationX);
+    }
+    private void ClampPosition()
+    {
+        Vector3 pos = (Camera.main.WorldToViewportPoint(playerShip.transform.position));
+        pos.x = Mathf.Clamp01(pos.x);
+        pos.y = Mathf.Clamp01(pos.y);
+        playerShip.transform.position = Camera.main.ViewportToWorldPoint(pos);
     }
 }
