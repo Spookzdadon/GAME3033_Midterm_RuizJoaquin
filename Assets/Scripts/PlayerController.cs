@@ -28,6 +28,8 @@ public class PlayerController : MonoBehaviour
     RawImage crosshair;
     [SerializeField]
     ParticleSystem explosion;
+    [SerializeField]
+    AudioSource explosionSound;
 
     private float shipRotationX = 0f;
     private float rotationSpeed = 60f;
@@ -37,9 +39,11 @@ public class PlayerController : MonoBehaviour
     private Transform cameraOriginPos;
     public bool isAlive = true;
     private bool canBoost = true;
+    private bool canBarrelRoll = true;
 
     void Start()
     {
+        explosionSound = GetComponent<AudioSource>();
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
         cameraOriginPos = mainCamera.transform;
@@ -85,6 +89,11 @@ public class PlayerController : MonoBehaviour
                     muzzleLocation.transform.LookAt(hit.point);
                     Instantiate<GameObject>(bulletPrefab, muzzleLocation.transform.position, muzzleLocation.transform.rotation);
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.F) && canBarrelRoll)
+            {
+                StartCoroutine(BarrelRoll());
             }
 
             RotateShipX();
@@ -170,6 +179,7 @@ public class PlayerController : MonoBehaviour
             isAlive = false;
             playerMesh.SetActive(false);
             explosion.Play();
+            explosionSound.Play();
         }
     }
 
@@ -181,5 +191,14 @@ public class PlayerController : MonoBehaviour
             mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -100f), 0.3f);
             canBoost = false;
         }
+    }
+
+    IEnumerator BarrelRoll()
+    {
+        canBarrelRoll = false;
+        animator.SetTrigger("BarrelRoll");
+        yield return new WaitForSeconds(0.5f);
+        canBarrelRoll = true;
+
     }
 }

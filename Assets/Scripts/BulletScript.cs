@@ -10,11 +10,21 @@ public class BulletScript : MonoBehaviour
     ParticleSystem trail;
     [SerializeField]
     ParticleSystem explosion;
+    [SerializeField]
+    public AudioClip laserShot;
+    [SerializeField]
+    public AudioClip explosionSound;
+    [SerializeField]
+    AudioSource audioSource;
+
 
     private bool isActive = true;
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = laserShot;
+        audioSource.Play();
         StartCoroutine(BulletLifeSpan());
     }
 
@@ -29,6 +39,8 @@ public class BulletScript : MonoBehaviour
     IEnumerator BulletLifeSpan()
     {
         yield return new WaitForSeconds(3);
+        audioSource.clip = explosionSound;
+        audioSource.Play();
         isActive = false;
         trail.Stop();
         explosion.Play();
@@ -37,6 +49,8 @@ public class BulletScript : MonoBehaviour
     }
     IEnumerator Explode()
     {
+        audioSource.clip = explosionSound;
+        audioSource.Play();
         isActive = false;
         trail.Stop();
         explosion.Play();
