@@ -17,6 +17,10 @@ public class PlayerController : MonoBehaviour
     private Camera mainCamera;
     [SerializeField]
     public CinemachineDollyCart dollyCart;
+    [SerializeField]
+    public GameObject muzzleLocation;
+    [SerializeField]
+    public GameObject bulletPrefab;
 
     private float shipRotationX = 0f;
     private float rotationSpeed = 60f;
@@ -32,7 +36,7 @@ public class PlayerController : MonoBehaviour
         playerShip = GameObject.FindGameObjectWithTag("PlayerShipParent");
         animator = GameObject.FindGameObjectWithTag("PlayerShip").GetComponent<Animator>();
 
-        dollyCart.m_Speed = 20f;
+        dollyCart.m_Speed = 60f;
     }
 
     // Update is called once per frame
@@ -51,8 +55,13 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            shipSpeed = 20f;
+            dollyCart.m_Speed = 60f;
             mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -40f), 0.3f);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Instantiate<GameObject>(bulletPrefab, muzzleLocation.transform.position, muzzleLocation.transform.rotation);
         }
 
         RotateShipX();
@@ -61,7 +70,7 @@ public class PlayerController : MonoBehaviour
 
         playerShip.transform.LookAt(lookAt.transform.position);
         playerShip.transform.Translate(new Vector3(x, y, 0), Space.Self);
-        transform.Translate(new Vector3(0f, 0f, dollyCart.m_Speed), Space.World);
+        //transform.Translate(new Vector3(0f, 0f, dollyCart.m_Speed), Space.World);
     }
 
     private void RotateShipX()
@@ -108,13 +117,13 @@ public class PlayerController : MonoBehaviour
 
     private void Boost()
     {
-        shipSpeed = 100f;
+        dollyCart.m_Speed = 80f;
         mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -60f), 0.3f);
     }
 
     private void Brake()
     {
-        shipSpeed = 10f;
+        dollyCart.m_Speed = 10f;
         mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -30f), 0.3f);
     }
 
