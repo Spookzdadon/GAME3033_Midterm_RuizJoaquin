@@ -11,7 +11,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     public float speed;
     [SerializeField]
-    public GameObject playerShip;    // Start is called before the first frame update
+    public GameObject playerShip;
+    [SerializeField]
+    public GameObject playerMesh;
     [SerializeField]
     private Animator animator;
     [SerializeField]
@@ -24,6 +26,8 @@ public class PlayerController : MonoBehaviour
     public GameObject bulletPrefab;
     [SerializeField]
     RawImage crosshair;
+    [SerializeField]
+    ParticleSystem explosion;
 
     private float shipRotationX = 0f;
     private float rotationSpeed = 60f;
@@ -32,6 +36,7 @@ public class PlayerController : MonoBehaviour
     private float y;
     private Transform cameraOriginPos;
     public bool isAlive = true;
+    private bool canBoost = true;
 
     void Start()
     {
@@ -39,10 +44,11 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
         cameraOriginPos = mainCamera.transform;
         dollyCart = GetComponent<CinemachineDollyCart>();
+        playerMesh = GameObject.FindGameObjectWithTag("PlayerShip");
         playerShip = GameObject.FindGameObjectWithTag("PlayerShipParent");
         animator = GameObject.FindGameObjectWithTag("PlayerShip").GetComponent<Animator>();
 
-        dollyCart.m_Speed = 60f;
+        dollyCart.m_Speed = 140f;
     }
 
     // Update is called once per frame
@@ -53,18 +59,21 @@ public class PlayerController : MonoBehaviour
             x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
             y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
 
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (canBoost)
             {
-                Boost();
-            }
-            else if (Input.GetKey(KeyCode.Space))
-            {
-                Brake();
-            }
-            else
-            {
-                dollyCart.m_Speed = 60f;
-                mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -40f), 0.3f);
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    Boost();
+                }
+                else if (Input.GetKey(KeyCode.Space))
+                {
+                    Brake();
+                }
+                else
+                {
+                    dollyCart.m_Speed = 140f;
+                    mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -40f), 0.3f);
+                }
             }
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -136,13 +145,13 @@ public class PlayerController : MonoBehaviour
 
     private void Boost()
     {
-        dollyCart.m_Speed = 80f;
+        dollyCart.m_Speed = 170f;
         mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -60f), 0.3f);
     }
 
     private void Brake()
     {
-        dollyCart.m_Speed = 10f;
+        dollyCart.m_Speed = 60f;
         mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -30f), 0.3f);
     }
 
@@ -156,6 +165,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        
+        if (!collision.gameObject.CompareTag("Bullet"))
+        {
+            isAlive = false;
+            playerMesh.SetActive(false);
+            explosion.Play();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("BoostPipe"))
+        {
+            dollyCart.m_Speed = 200f;
+            mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -100f), 0.3f);
+            canBoost = false;
+        }
     }
 }
