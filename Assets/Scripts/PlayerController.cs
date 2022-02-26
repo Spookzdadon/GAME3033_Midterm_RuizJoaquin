@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PlayerScript : MonoBehaviour
+using DG.Tweening;
+using Cinemachine;
+public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     public GameObject lookAt;
@@ -12,15 +13,26 @@ public class PlayerScript : MonoBehaviour
     public GameObject playerShip;    // Start is called before the first frame update
     [SerializeField]
     private Animator animator;
+    [SerializeField]
+    private Camera mainCamera;
+    [SerializeField]
+    public CinemachineDollyCart dollyCart;
 
     private float shipRotationX = 0f;
     private float rotationSpeed = 60f;
+    private float shipSpeed = 20f;
     private float x;
     private float y;
+    private Transform cameraOriginPos;
+
     void Start()
     {
+        cameraOriginPos = mainCamera.transform;
+        dollyCart = GetComponent<CinemachineDollyCart>();
         playerShip = GameObject.FindGameObjectWithTag("PlayerShipParent");
         animator = GameObject.FindGameObjectWithTag("PlayerShip").GetComponent<Animator>();
+
+        dollyCart.m_Speed = 20f;
     }
 
     // Update is called once per frame
@@ -29,14 +41,27 @@ public class PlayerScript : MonoBehaviour
         x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
         y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
 
-        playerShip.transform.Translate(new Vector3(x, y, 0), Space.World);
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            Boost();
+        }
+        else if (Input.GetKey(KeyCode.Space))
+        {
+            Brake();
+        }
+        else
+        {
+            shipSpeed = 20f;
+            mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -40f), 0.3f);
+        }
 
         RotateShipX();
-        
+        ClampPosition();
+
 
         playerShip.transform.LookAt(lookAt.transform.position);
-        ClampPosition();
-        transform.Translate(new Vector3(0f, 0f, 20f * Time.deltaTime), Space.World);
+        playerShip.transform.Translate(new Vector3(x, y, 0), Space.Self);
+        transform.Translate(new Vector3(0f, 0f, dollyCart.m_Speed), Space.World);
     }
 
     private void RotateShipX()
@@ -80,6 +105,19 @@ public class PlayerScript : MonoBehaviour
         }
         animator.SetFloat("ShipRotX", shipRotationX);
     }
+
+    private void Boost()
+    {
+        shipSpeed = 100f;
+        mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -60f), 0.3f);
+    }
+
+    private void Brake()
+    {
+        shipSpeed = 10f;
+        mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -30f), 0.3f);
+    }
+
     private void ClampPosition()
     {
         Vector3 pos = (Camera.main.WorldToViewportPoint(playerShip.transform.position));

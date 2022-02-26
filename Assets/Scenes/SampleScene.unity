@@ -869,7 +869,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.6556244, z: -38.673225}
+  m_LocalPosition: {x: 0, y: 4.6, z: -40}
   m_LocalScale: {x: 0.26080927, y: 0.26080927, z: 0.26080927}
   m_Children: []
   m_Father: {fileID: 1459643362}
@@ -946,6 +946,66 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1459643362}
   m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1373533874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1373533876}
+  - component: {fileID: 1373533875}
+  m_Layer: 0
+  m_Name: DollyTrack1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1373533875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373533874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a200b19ca1a9685429ed7e043c28e904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Resolution: 20
+  m_Appearance:
+    pathColor: {r: 0, g: 1, b: 0, a: 1}
+    inactivePathColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    width: 2.37
+  m_Looped: 0
+  m_Waypoints:
+  - position: {x: 0, y: 0, z: -5}
+    roll: 0
+  - position: {x: 0, y: 0, z: 27.410465}
+    roll: 0
+  - position: {x: -48.131336, y: 0, z: 65.04926}
+    roll: 0
+  - position: {x: 4.50126, y: 26.293121, z: 102.688065}
+    roll: 0
+  - position: {x: -4.310561, y: 18.044155, z: 140.32687}
+    roll: 0
+--- !u!4 &1373533876
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373533874}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.8226385, y: 6.2943754, z: 5.7132263}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1440787601
 GameObject:
@@ -1149,6 +1209,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1459643362}
   - component: {fileID: 1459643361}
+  - component: {fileID: 1459643363}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1165,13 +1226,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1459643360}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8a137266dcc57240b3586df4fd6e155, type: 3}
+  m_Script: {fileID: 11500000, guid: 614990841bbea8e45bd217f391e7e1fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   lookAt: {fileID: 1148286559}
-  speed: 30
+  speed: 20
   playerShip: {fileID: 0}
   animator: {fileID: 0}
+  mainCamera: {fileID: 963194227}
+  dollyCart: {fileID: 0}
 --- !u!4 &1459643362
 Transform:
   m_ObjectHideFlags: 0
@@ -1179,8 +1242,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1459643360}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.8226385, y: 6.2943754, z: 5.7132263}
+  m_LocalRotation: {x: -0.031682283, y: 0.29506266, z: 0.009789751, w: 0.95490235}
+  m_LocalPosition: {x: 5.8226385, y: 6.2943754, z: 0.7132263}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1888321192}
@@ -1189,6 +1252,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1459643363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459643360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a9c787e5d1bbf48a389834c4a9641c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Path: {fileID: 1373533875}
+  m_UpdateMethod: 0
+  m_PositionUnits: 1
+  m_Speed: 0
+  m_Position: 0
 --- !u!1 &1497393305
 GameObject:
   m_ObjectHideFlags: 0
