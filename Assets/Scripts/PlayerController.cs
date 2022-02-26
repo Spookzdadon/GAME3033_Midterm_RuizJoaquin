@@ -47,10 +47,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 mousePos = Input.mousePosition;
-        mousePos += Camera.main.transform.forward * 100f;
-        var aim = mainCamera.ScreenToWorldPoint(mousePos);
-        muzzleLocation.transform.LookAt(aim);
+        //Vector3 mousePos = Input.mousePosition;
+        //mousePos += transform.forward * 100f;
+        //var aim = mainCamera.ScreenToWorldPoint(mousePos);
+        //muzzleLocation.transform.LookAt(aim);
         x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
         y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
 
@@ -70,7 +70,13 @@ public class PlayerController : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            Instantiate<GameObject>(bulletPrefab, muzzleLocation.transform.position, muzzleLocation.transform.rotation);
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if(Physics.Raycast(ray, out hit))
+            {
+                muzzleLocation.transform.LookAt(hit.point);
+                Instantiate<GameObject>(bulletPrefab, muzzleLocation.transform.position, muzzleLocation.transform.rotation);
+            }
         }
 
         RotateShipX();
