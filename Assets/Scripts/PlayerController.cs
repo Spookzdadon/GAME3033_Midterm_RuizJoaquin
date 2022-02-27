@@ -4,8 +4,14 @@ using UnityEngine;
 using DG.Tweening;
 using Cinemachine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    public GameObject pauseCanvas;
+    [SerializeField]
+    public LayerMask ignoreLayer;
     [SerializeField]
     public GameObject lookAt;
     [SerializeField]
@@ -30,6 +36,10 @@ public class PlayerController : MonoBehaviour
     ParticleSystem explosion;
     [SerializeField]
     AudioSource explosionSound;
+    [SerializeField]
+    GameObject restartButton;
+    [SerializeField]
+    GameObject winCanvas;
 
     private float shipRotationX = 0f;
     private float rotationSpeed = 60f;
@@ -40,6 +50,7 @@ public class PlayerController : MonoBehaviour
     public bool isAlive = true;
     private bool canBoost = true;
     private bool canBarrelRoll = true;
+    public bool isPaused = false;
 
     void Start()
     {
@@ -58,7 +69,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isAlive)
+        if (isAlive && !isPaused)
         {
             x = Input.GetAxisRaw("Horizontal") * Time.deltaTime * speed;
             y = Input.GetAxisRaw("Vertical") * Time.deltaTime * speed;
@@ -84,16 +95,26 @@ public class PlayerController : MonoBehaviour
             {
                 Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
-                if (Physics.Raycast(ray, out hit))
+                if (Physics.Raycast(ray, out hit, ignoreLayer))
+                {
+                    return;
+                }
+
+                else if (Physics.Raycast(ray, out hit))
                 {
                     muzzleLocation.transform.LookAt(hit.point);
                     Instantiate<GameObject>(bulletPrefab, muzzleLocation.transform.position, muzzleLocation.transform.rotation);
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.F) && canBarrelRoll)
+            if (Input.GetKeyDown(KeyCode.E) && canBarrelRoll)
             {
-                StartCoroutine(BarrelRoll());
+                StartCoroutine(BarrelRollRight());
+            }
+
+            else if (Input.GetKeyDown(KeyCode.Q) && canBarrelRoll)
+            {
+                StartCoroutine(BarrelRollLeft());
             }
 
             RotateShipX();
@@ -107,6 +128,14 @@ public class PlayerController : MonoBehaviour
         else
         {
             dollyCart.m_Speed = 0f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            pauseCanvas.SetActive(true);
+            isPaused = true;
+            Cursor.visible = true;
+            Time.timeScale = 0;
         }
     }
 
@@ -180,6 +209,9 @@ public class PlayerController : MonoBehaviour
             playerMesh.SetActive(false);
             explosion.Play();
             explosionSound.Play();
+            Cursor.visible = true;
+            restartButton.SetActive(true);
+
         }
     }
 
@@ -191,14 +223,35 @@ public class PlayerController : MonoBehaviour
             mainCamera.transform.DOLocalMove(new Vector3(0, 4.6f, -100f), 0.3f);
             canBoost = false;
         }
+
+        if(other.gameObject.CompareTag("WinTrigger"))
+        {
+            winCanvas.SetActive(true);
+            isAlive = false;
+            Cursor.visible = true;
+        }
     }
 
-    IEnumerator BarrelRoll()
+    IEnumerator BarrelRollRight()
     {
         canBarrelRoll = false;
         animator.SetTrigger("BarrelRoll");
         yield return new WaitForSeconds(0.5f);
         canBarrelRoll = true;
 
+    }
+
+    IEnumerator BarrelRollLeft()
+    {
+        canBarrelRoll = false;
+        animator.SetTrigger("BarrelRollLeft");
+        yield return new WaitForSeconds(0.5f);
+        canBarrelRoll = true;
+
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene("GameScene");
     }
 }
